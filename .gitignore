@@ -1,0 +1,5 @@
+historical_snapshots/
+__pycache__/
+pipeline/
+*.pyc
+*.asv

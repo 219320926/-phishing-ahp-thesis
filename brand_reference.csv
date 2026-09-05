@@ -1,0 +1,72 @@
+brand,sector,keywords
+PayPal,Financial Services,paypal|payp4l|paypaI
+Visa,Financial Services,visa|vis4
+Mastercard,Financial Services,mastercard|master-card|masterc4rd
+American Express,Financial Services,amex|americanexpress|american-express
+Chase Bank,Financial Services,chase|chasebank|chase-bank
+Wells Fargo,Financial Services,wellsfargo|wells-fargo
+Bank of America,Financial Services,bankofamerica|bofa|boa-online
+Citibank,Financial Services,citibank|citi-bank|citigroup
+HSBC,Financial Services,hsbc
+Barclays,Financial Services,barclays
+Standard Bank,Financial Services,standardbank|standard-bank|stanbank
+FNB,Financial Services,fnb|firstnationalbank|first-national-bank
+ABSA,Financial Services,absa|absa-bank
+Nedbank,Financial Services,nedbank|ned-bank
+Capitec,Financial Services,capitec|capitecbank
+Discovery Bank,Financial Services,discoverybank|discovery-bank
+Investec,Financial Services,investec
+TymeBank,Financial Services,tymebank|tyme-bank
+Coinbase,Financial Services,coinbase
+Binance,Financial Services,binance
+Crypto.com,Financial Services,crypto.com|cryptocom
+MetaMask,Financial Services,metamask|meta-mask
+Revolut,Financial Services,revolut
+Western Union,Financial Services,westernunion|western-union
+Santander,Financial Services,santander
+ING,Financial Services,ing-bank|ingdirect
+Standard Chartered,Financial Services,standardchartered|standard-chartered
+Microsoft,Technology,microsoft|micros0ft|office365|outlook365
+Apple,Technology,apple|appleid|icloud|itunes
+Google,Technology,google|gmail|g00gle
+Facebook,Technology,facebook|faceb00k|fb-login
+Instagram,Technology,instagram|1nstagram
+WhatsApp,Technology,whatsapp|whats-app
+LinkedIn,Technology,linkedin|linked-in
+Netflix,Technology,netflix|netfl1x
+Adobe,Technology,adobe|adobe-id
+Dropbox,Technology,dropbox|drop-box
+Zoom,Technology,zoom|zoomus|zoom-meeting
+Yahoo,Technology,yahoo|yah00
+AOL,Technology,aol|aol-mail
+Amazon,Retail,amazon|amaz0n|amazon-aws
+Takealot,Retail,takealot|take-a-lot
+eBay,Retail,ebay|eb4y
+Walmart,Retail,walmart|wal-mart
+Alibaba,Retail,alibaba|aliexpress
+Shein,Retail,shein
+Woolworths,Retail,woolworths
+Shoprite,Retail,shoprite
+DHL,Logistics,dhl|dhl-express|dhlparcel
+FedEx,Logistics,fedex|fed-ex
+UPS,Logistics,ups|ups-tracking
+PostNet,Logistics,postnet|post-net
+South African Post Office,Logistics,sapo|sa-post-office|postoffice
+Aramex,Logistics,aramex
+USPS,Logistics,usps|usps-tracking
+SARS,Government,sars|sars-efiling|sarsefiling
+IRS,Government,irs|irs-gov
+HMRC,Government,hmrc|hmrc-gov
+Home Affairs,Government,homeaffairs|home-affairs|dha-gov
+Vodacom,Telecommunications,vodacom|vodacom-sa
+MTN,Telecommunications,mtn|mtn-sa
+Telkom,Telecommunications,telkom
+Cell C,Telecommunications,cellc|cell-c
+Rain,Telecommunications,rain-mobile
+Verizon,Telecommunications,verizon
+AT&T,Telecommunications,at-t|att-wireless
+Steam,Technology,steamcommunity|steam-powered|steam-login
+Roblox,Technology,roblox
+Spotify,Technology,spotify
+Uber,Technology,uber|uber-eats
+Discord,Technology,discord|discordapp
