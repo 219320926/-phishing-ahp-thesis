@@ -1,108 +1,44 @@
-\# AHP-Based Phishing Mitigation Prioritisation Framework
+# AHP-Based Phishing Mitigation Prioritisation Framework
 
+Companion code and data for the Master's thesis *Integrating the Analytical Hierarchy Process and Human Indicators in Decision-Making on Phishing Attacks* (Tebogo Mashabane, Cape Peninsula University of Technology).
 
+## What this is
 
-Companion code for the Master's thesis: \*Integrating the Analytical Hierarchy
+The full pipeline behind the results in Chapters 4 and 5: a twelve-month (January-December 2025), survivorship-bias-corrected phishing-feed dataset, six threat-intelligence proxy criteria (C1-C6) derived from it, and an AHP weighting with bootstrap resampling and descriptive statistical tests. The criteria are proxies computed from feed fields (URL structure, persistence, brand matches, time-in-archive, record counts, financial-sector matches); they are not direct measurements of user behaviour, organisational response or financial loss (thesis Section 3.5.1).
 
-Process and Human Indicators in Decision-Making on Phishing Attacks\*
+## Inputs included (exact archived data)
 
-(Tebogo Mashabane, Cape Peninsula University of Technology).
+- `historical_snapshots/metadata_2025-MM.json.gz`: the archive's `metadata.json` exactly as it existed at each commit listed in `target_commits.json`, taken from `github.com/invisiblethreat/openphish-pihole` (commit SHAs pinned in `target_commits.json`; each month is observed about 182 days after month-end).
+- `upstream_changelog/changelog.md`: copy of the archive's `changelog.md` (used only for C5, monthly record counts).
+- `brand_reference.csv`: 71-brand reference list (thesis Appendix C).
 
+## Reproduce (Python 3.10+; `pip install pandas numpy scipy statsmodels rapidfuzz`)
 
+```
+gunzip -k historical_snapshots/*.gz          # creates metadata_2025-MM.json
+mkdir ../openphish-pihole
+cp upstream_changelog/changelog.md ../openphish-pihole/changelog.md
+python compute_criteria.py                   # -> monthly_criteria_series.csv (Table 4.1 inputs)
+python prepare_for_matlab.py                 # -> criteria_point_estimates.csv, criteria_daily_series.csv
+python run_ahp.py                            # -> table_III_final.csv, bootstrap_weight_samples.csv (Tables 4.2-4.5)
+```
+Then run `ahp_analysis.m` in MATLAB (Statistics and Machine Learning Toolbox) from this folder for the cross-validation in Table 4.6 (`table_III_matlab.csv`, `tukey_hsd_matlab.csv`).
 
-\## What this is
+`find_target_commits.py` and `extract_snapshots.py` show how the snapshots were originally obtained from a full clone of the archive; they are only needed to repeat that step.
 
+## Table-to-file map
 
+| Thesis item | Produced by | Output file |
+|---|---|---|
+| Table 4.1 criterion values | compute_criteria.py, prepare_for_matlab.py | monthly_criteria_series.csv, criteria_point_estimates.csv |
+| Tables 4.2-4.3 matrix and point weights | run_ahp.py / ahp_analysis.m | printed output; MATLAB output in thesis Appendix B |
+| Table 4.4 bootstrap weights (B = 1000, seed 42) | run_ahp.py | table_III_final.csv, bootstrap_weight_samples.csv |
+| Hotelling T2, Tukey HSD, Bonferroni tests, sensitivity, rank correlation | ahp_analysis.m | tukey_hsd_matlab.csv, console output (Appendix B) |
+| Table 4.5 strategy scores | calculated in the thesis (Table 4.4 weights x literature-informed local scores); no script | illustrative, not reproduced from feed data |
+| Table 4.6 Python-MATLAB check | run_ahp.py vs ahp_analysis.m | table_III_final.csv vs table_III_matlab.csv |
 
-This repository contains the full data-processing and analysis pipeline used
+Verified: re-running `compute_criteria.py` on these snapshots reproduces `criteria_point_estimates.csv` to full precision.
 
-to produce the empirical results in Chapters 4 and 5 of the thesis: a
+## Citation
 
-twelve-month, bias-corrected phishing threat dataset, six derived risk
-
-criteria, and an AHP-based priority ranking validated through bootstrap
-
-resampling and formal statistical testing.
-
-
-
-\## Pipeline overview
-
-
-
-1\. \*\*`find\_target\_commits.py`\*\* — locates historical git commits in the
-
-&#x20;  openphish-pihole archive, timed so each month's domain data has fully
-
-&#x20;  resolved before being observed (avoiding retention-window survivorship
-
-&#x20;  bias).
-
-2\. \*\*`extract\_snapshots.py`\*\* — pulls the archive's `metadata.json` as it
-
-&#x20;  existed at each of those historical commits.
-
-3\. \*\*`brand\_matcher.py`\*\* — algorithmic brand/sector matching (substring +
-
-&#x20;  edit-distance) used to derive target-brand and sector indicators from
-
-&#x20;  domain names, using `brand\_reference.csv`.
-
-4\. \*\*`compute\_criteria.py`\*\* — computes all six criteria (C1–C6) for each
-
-&#x20;  of the twelve historical monthly snapshots.
-
-5\. \*\*`prepare\_for\_matlab.py`\*\* — reshapes the computed criteria into the
-
-&#x20;  CSV format used by the MATLAB script.
-
-6\. \*\*`run\_ahp.py`\*\* — Python implementation of the AHP computation:
-
-&#x20;  pairwise matrix, eigenvector weights, bootstrap resampling, and
-
-&#x20;  statistical validation.
-
-7\. \*\*`ahp\_analysis.m`\*\* — independent MATLAB implementation of the same
-
-&#x20;  AHP computation, used to cross-validate the Python results (Section 4.10
-
-&#x20;  of the thesis).
-
-
-
-\## Requirements
-
-
-
-\- Python 3.10+, with `pandas`, `numpy`, `scipy`, `statsmodels`, `rapidfuzz`
-
-\- MATLAB (R2021a or later) with the Statistics and Machine Learning Toolbox
-
-\- git, and a local clone of
-
-&#x20; \[openphish-pihole](https://github.com/invisiblethreat/openphish-pihole)
-
-
-
-\## Note on data files
-
-
-
-Raw historical snapshots (`historical\_snapshots/`) are not included in this
-
-repository, since they can be regenerated by running `find\_target\_commits.py`
-
-and `extract\_snapshots.py` against a cloned copy of the openphish-pihole
-
-archive. Processed/derived CSV outputs are included for reference.
-
-
-
-\## Citation
-
-
-
-If referencing this work, please cite the associated thesis (full citation
-
-in the thesis bibliography).
-
+Please cite the associated thesis (see its bibliography).
