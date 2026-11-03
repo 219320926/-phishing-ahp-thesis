@@ -1,43 +1,55 @@
 # AHP-Based Phishing Mitigation Prioritisation Framework
 
-Companion code and data for the Master's thesis *Integrating the Analytical Hierarchy Process and Human Indicators in Decision-Making on Phishing Attacks* (Tebogo Mashabane, Cape Peninsula University of Technology).
+Companion code and data for the Master's thesis *A Proposed AHP-Based Decision Framework for Prioritising Phishing Mitigation Strategies Using Quantitative Human-Centric Indicators* (Tebogo Mashabane, Cape Peninsula University of Technology).
 
 ## What this is
 
-The full pipeline behind the results in Chapters 4 and 5: a twelve-month (January-December 2025), survivorship-bias-corrected phishing-feed dataset, six threat-intelligence proxy criteria (C1-C6) derived from it, and an AHP weighting with bootstrap resampling and descriptive statistical tests. The criteria are proxies computed from feed fields (URL structure, persistence, brand matches, time-in-archive, record counts, financial-sector matches); they are not direct measurements of user behaviour, organisational response or financial loss (thesis Section 3.5.1).
+The pipeline behind the results in Chapters 4 and 5: a twelve-month (January to December 2025) dataset reconstructed from historical snapshots of an archive of the OpenPhish free feed, six archive-derived proxy criteria (C1 to C6), the AHP computation, and descriptive resampling and sensitivity analyses. The proxies are computed from archive fields (domain structure, observation counts and spans, brand matches, changelog volume). They are not measurements of user behaviour, organisational response or financial loss. The reconstruction reduces a snapshot-age problem but retains residual survivorship selection (thesis Sections 3.5.1 and 3.5.2). No hypothesis tests are used.
 
-## Inputs included (exact archived data)
+## Inputs included
 
-- `historical_snapshots/metadata_2025-MM.json.gz`: the archive's `metadata.json` exactly as it existed at each commit listed in `target_commits.json`, taken from `github.com/invisiblethreat/openphish-pihole` (commit SHAs pinned in `target_commits.json`; each month is observed about 182 days after month-end).
-- `upstream_changelog/changelog.md`: copy of the archive's `changelog.md` (used only for C5, monthly record counts).
-- `brand_reference.csv`: 71-brand reference list (thesis Appendix C).
+- `historical_snapshots/metadata_2025-MM.json.gz`: the archive's `metadata.json` as it existed at the commit listed for that month in `target_commits.json`, from `github.com/invisiblethreat/openphish-pihole` (one commit per month, about 181 days after month-end; read with `git show <sha>:metadata.json`).
+- `upstream_changelog/changelog.md`: copy of the archive's `changelog.md` (used only for C5).
+- `brand_reference.csv`: the 71-brand reference list (thesis Appendix C).
+- `monthly_criteria_series.csv`: monthly values of C1 to C6 (thesis Table 4.1).
 
-## Reproduce (Python 3.10+; `pip install pandas numpy scipy statsmodels rapidfuzz`)
+## Environment
+
+Python 3.14.6, Windows 11. Exact package versions are in `requirements.txt` (`pip install -r requirements.txt`). MATLAB R2026a Update 3 with the Statistics and Machine Learning Toolbox is used for the cross-check only.
+
+## Reproduce
 
 ```
 gunzip -k historical_snapshots/*.gz          # creates metadata_2025-MM.json
 mkdir ../openphish-pihole
 cp upstream_changelog/changelog.md ../openphish-pihole/changelog.md
-python compute_criteria.py                   # -> monthly_criteria_series.csv (Table 4.1 inputs)
-python prepare_for_matlab.py                 # -> criteria_point_estimates.csv, criteria_daily_series.csv
-python run_ahp.py                            # -> table_III_final.csv, bootstrap_weight_samples.csv (Tables 4.2-4.5)
+python compute_criteria.py                   # -> monthly_criteria_series.csv
+python prepare_for_matlab.py                 # -> criteria_point_estimates.csv
+python run_ahp.py                            # -> point weights and bootstrap (Tables 4.2 to 4.4)
+python build_cohort_cache.py                 # -> cohort_raw.pkl (needed for the matcher variants)
+python resampling_and_sensitivity.py         # -> g1_*, g2_*, g3_*, g4_* CSVs (resampling, perturbation, variants)
+python summary_tables.py                     # -> r_* CSVs (Tables 4.5 to 4.8 inputs, strategy scenario)
 ```
-Then run `ahp_analysis.m` in MATLAB (Statistics and Machine Learning Toolbox) from this folder for the cross-validation in Table 4.6 (`table_III_matlab.csv`, `tukey_hsd_matlab.csv`).
 
-`find_target_commits.py` and `extract_snapshots.py` show how the snapshots were originally obtained from a full clone of the archive; they are only needed to repeat that step.
+Then run `ahp_analysis.m` in MATLAB from this folder for the Python-MATLAB comparison (Table 4.9).
+`ahp_analysis.m` also contains Steps 6 to 8 (Hotelling, ANOVA/Tukey and Bonferroni tests). They are retained only to reproduce the console log in thesis Appendix B and are not used as evidence (thesis Section 3.4.5).
+
+`results_reference/` holds the output files from the runs reported in the thesis, for comparison with your own run.
 
 ## Table-to-file map
 
 | Thesis item | Produced by | Output file |
 |---|---|---|
-| Table 4.1 criterion values | compute_criteria.py, prepare_for_matlab.py | monthly_criteria_series.csv, criteria_point_estimates.csv |
-| Tables 4.2-4.3 matrix and point weights | run_ahp.py / ahp_analysis.m | printed output; MATLAB output in thesis Appendix B |
-| Table 4.4 bootstrap weights (B = 1000, seed 42) | run_ahp.py | table_III_final.csv, bootstrap_weight_samples.csv |
-| Hotelling T2, Tukey HSD, Bonferroni tests, sensitivity, rank correlation | ahp_analysis.m | tukey_hsd_matlab.csv, console output (Appendix B) |
-| Table 4.5 strategy scores | calculated in the thesis (Table 4.4 weights x literature-informed local scores); no script | illustrative, not reproduced from feed data |
-| Table 4.6 Python-MATLAB check | run_ahp.py vs ahp_analysis.m | table_III_final.csv vs table_III_matlab.csv |
+| Table 4.1 monthly values and spread | compute_criteria.py, summary_tables.py | monthly_criteria_series.csv, r_descriptives.csv |
+| Tables 4.2 and 4.3 matrix and point weights | run_ahp.py, ahp_analysis.m | printed output |
+| Table 4.4 bootstrap intervals (B = 1,000, seed 42) | run_ahp.py | table_III_final.csv, bootstrap_weight_samples.csv |
+| Table 4.5 resampling summaries | resampling_and_sensitivity.py | g1_jackknife.csv, g1_block_bootstrap.csv, g1_rank_probability.csv |
+| Table 4.6 reciprocity-preserving rank stability | resampling_and_sensitivity.py | g2_single_perturbation.csv, g2_flip_thresholds.csv, g2_joint_noise.csv, r_sensitivity.csv |
+| Table 4.7 normalisation, orientation and matcher variants | resampling_and_sensitivity.py, summary_tables.py | g3_preprocessing.csv, r_orientation.csv |
+| Table 4.8 illustrative strategy scores | summary_tables.py | r_strategy_assumptions.csv, r_strategy_dirichlet.csv, r_strategy_localperturb.csv |
+| Table 4.9 Python-MATLAB comparison | run_ahp.py vs ahp_analysis.m | table_III_final.csv vs table_III_matlab.csv |
 
-Verified: re-running `compute_criteria.py` on these snapshots reproduces `criteria_point_estimates.csv` to full precision.
+Table 4.8 uses assumed local scores and is an illustration, not a result derived from the feed data.
 
 ## Citation
 

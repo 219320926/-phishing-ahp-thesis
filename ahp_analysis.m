@@ -140,7 +140,3 @@ function [weights, lambda_max, CI, CR] = compute_ahp_weights(matrix, RI)
     CI = (lambda_max - n) / (n - 1);
     CR = CI / RI;
 end
-
-
-
-
