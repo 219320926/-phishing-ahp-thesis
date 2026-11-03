@@ -1,5 +1,0 @@
-"cluster weights drawn from Dirichlet(1,1,1)",share_pct
-B > A > C,60.01
-A > B > C,18.8
-B > C > A,17.44
-C > B > A,3.75
